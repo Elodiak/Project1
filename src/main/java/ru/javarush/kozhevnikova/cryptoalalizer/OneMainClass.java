@@ -7,8 +7,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class OneMainClass {
 
@@ -38,7 +36,15 @@ public class OneMainClass {
         if (scanDest.equals("q")) {
             AnotherConstants.checkDirectory();
             AnotherConstants.checkFile(number);
-            scanDest = AnotherConstants.PATHOFFILE + "text" + number +".txt";
+            String fileName = "newText.txt";
+            if(number == 1) {
+                fileName = "encode.txt";
+            } else if (number == 2) {
+                fileName = "decode.txt";
+            } else if(number == 3) {
+                fileName = "bruteforce.txt";
+            }
+            scanDest = AnotherConstants.PATHOFFILE + fileName;
         } else {
             File dest = new File(scanDest);
             if (!dest.exists()) {
@@ -50,9 +56,9 @@ public class OneMainClass {
         List<String> list = Files.readAllLines(path);
         List<Character> listToChar = new ArrayList<>();
 
-        String str = "";
-        for (String s : list) {
-            str = str + s;
+        StringBuilder str = new StringBuilder();
+        for(String s : list) {
+            str.append(s);
         }
 
         for (int i = 0; i < str.length(); i++) {
@@ -65,14 +71,14 @@ public class OneMainClass {
                 case (1):
                     System.out.println("key");
                     int key = scanner.nextInt();
-                    AnotherConstants.findKey(key);
-                    Encode.encode(listToChar, bufferedWriter, key);
+                    int fixKey = AnotherConstants.findKey(key);
+                    Encode.encode(listToChar, bufferedWriter, fixKey);
                     break;
                 case (2):
                     System.out.println("key");
                     key = scanner.nextInt();
-                    AnotherConstants.findKey(key);
-                    Decode.decode(listToChar, bufferedWriter, key);
+                    fixKey = AnotherConstants.findKey(key);
+                    Decode.decode(listToChar, bufferedWriter, fixKey);
                     break;
                 case (3):
                     BruteForce.brute(listToChar, bufferedWriter);
