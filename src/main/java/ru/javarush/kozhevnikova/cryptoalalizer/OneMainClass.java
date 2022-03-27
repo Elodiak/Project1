@@ -4,72 +4,80 @@ package ru.javarush.kozhevnikova.cryptoalalizer;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class OneMainClass {
 
-    public static final String TXT = System.getProperty("user.dir")+File.separator+"text"+File.separator;
-
-
     public static void main(String[] args) throws IOException {
 
-        System.out.println(TXT);
-
         Scanner scanner = new Scanner(System.in);
-
         System.out.println("Введи \"1\" для шифрования, \"2\" для дешифрования, \"3\" для bruteforce");
         int number = scanner.nextInt();
 
-        System.out.println("Введи путь к файлу:");
-
+        System.out.println("Введи путь к файлу либо нажми \"q\" для того что бы использовать файл по умолчанию");
         String scanSource = scanner.next();
 
-        //String scanSource = "/Users/nasty/Desktop/text.txt";
-
-
-        if (scanSource.equals("exit")) {
+        if (scanSource.equals("q")) {
+            AnotherConstants.checkDirectory();
+            AnotherConstants.checkFile();
+            scanSource = AnotherConstants.PATHOFFILE + "text.txt";
+        }else {
             File source = new File(scanSource);
             if (!source.exists()) {
-                throw new AppException("File not found");
+                throw new AppException("Исходный файл не найден");
             }
         }
 
-        System.out.println("Введи путь к файлу либо нажми \"exit\" для того что бы использовать файл по умолчанию");
+        System.out.println("Введи путь к файлу либо нажми \"q\" для того что бы использовать файл по умолчанию");
+        String scanDest = scanner.next();
 
-            String scanDest = scanner.next();
-
-            if(scanDest.equals("exit")) {
-                scanDest = TXT + "text.txt";
-                Files.createDirectory(Path.of(TXT));
-                Files.createFile(Path.of(scanDest));
+        if (scanDest.equals("q")) {
+            AnotherConstants.checkDirectory();
+            AnotherConstants.checkFile(number);
+            scanDest = AnotherConstants.PATHOFFILE + "text" + number +".txt";
+        } else {
+            File dest = new File(scanDest);
+            if (!dest.exists()) {
+                throw new RuntimeException("Конечный файл не найден");
             }
+        }
 
-        System.out.println(scanDest);
+        Path path = Path.of(scanSource);
+        List<String> list = Files.readAllLines(path);
+        List<Character> listToChar = new ArrayList<>();
 
-        try (FileReader source = new FileReader(scanSource);
-             FileWriter destination = new FileWriter(scanDest)) {
+        String str = "";
+        for (String s : list) {
+            str = str + s;
+        }
 
-//        try (FileReader source = new FileReader("/Users/nasty/Desktop/Project/Project1/src/main/java/ru/javarush/kozhevnikova/cryptoalalizer/TextOne.txt");
-//             FileWriter destination = new FileWriter("/Users/nasty/Desktop/text3.txt")) {
+        for (int i = 0; i < str.length(); i++) {
+            listToChar.add(str.charAt(i));
+        }
 
-            System.out.println("key");
-            int key = scanner.nextInt(); //от 0 до длины алфавита
-
-            if (key > Alphabet.alphabet.length) {
-                key = key % Alphabet.alphabet.length;
-            }
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(scanDest))) {
 
             switch (number) {
                 case (1):
-                    Encode.encode(source, destination, key);
+                    System.out.println("key");
+                    int key = scanner.nextInt();
+                    AnotherConstants.findKey(key);
+                    Encode.encode(listToChar, bufferedWriter, key);
                     break;
                 case (2):
-                    Decode.decode(source, destination, key);
+                    System.out.println("key");
+                    key = scanner.nextInt();
+                    AnotherConstants.findKey(key);
+                    Decode.decode(listToChar, bufferedWriter, key);
                     break;
                 case (3):
+                    BruteForce.brute(listToChar, bufferedWriter);
                     break;
             }
-
         }
     }
 }
