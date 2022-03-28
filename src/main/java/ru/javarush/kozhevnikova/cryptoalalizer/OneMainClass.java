@@ -21,7 +21,6 @@ public class OneMainClass {
 
         if (scanSource.equals("q")) {
             AnotherConstants.checkDirectory();
-            AnotherConstants.checkFile();
             scanSource = AnotherConstants.PATHOFFILE + "text.txt";
         }else {
             File source = new File(scanSource);
@@ -35,7 +34,6 @@ public class OneMainClass {
 
         if (scanDest.equals("q")) {
             AnotherConstants.checkDirectory();
-            AnotherConstants.checkFile(number);
             String fileName = "newText.txt";
             if(number == 1) {
                 fileName = "encode.txt";
